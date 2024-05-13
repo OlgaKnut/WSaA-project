@@ -20,11 +20,11 @@ def add_city(city):
     if (not conn):
         connect()
 
-    query = """insert into city (ID, Name, CountryCode, District, Population, latitude, longitude) 
+    query = """insert into city (ID, Name, CountryCode, District, Population) 
                     values (%s, %s, %s, %s, %s, %s, %s)"""
 
     cursor=conn.cursor()
-    cursor.execute(query,(city["ID"], city["Name"],city["CountryCode"],city["District"],city["Population"],city["Latitude"],city["Longitude"]))
+    cursor.execute(query,(city["ID"], city["Name"],city["CountryCode"],city["District"],city["Population"]))
     conn.commit()
     return city
 
@@ -41,10 +41,10 @@ def update_city(id, city):
         if (not conn):
             connect()
         query ="""update city set Name = %s, CountryCode = %s, District = %s, 
-                Population = %s, latitude=%s, longitude= %s  where id = %s"""
+                Population = %s  where id = %s"""
         
         cursor=conn.cursor()
-        cursor.execute(query,(city["Name"],city["CountryCode"],city["District"],city["Population"],city["Latitude"],city["Longitude"], id))
+        cursor.execute(query,(city["Name"],city["CountryCode"],city["District"],city["Population"], id))
         conn.commit()
         return city
 
@@ -93,7 +93,7 @@ def get_city(id):
     if (not conn):
         connect()
 
-    query = """select  ID, Name, CountryCode, Population, latitude, longitude 
+    query = """select  ID, Name, CountryCode, Population
             from city where ID = %s"""
 
     cursor=conn.cursor()
