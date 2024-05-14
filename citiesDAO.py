@@ -20,13 +20,16 @@ def add_city(city):
     if (not conn):
         connect()
 
-    query = """insert into city (ID, Name, CountryCode, District, Population) 
-                    values (%s, %s, %s, %s, %s, %s, %s)"""
+    query = """insert into city (Name, CountryCode, District, Population) 
+                    values (%s, %s, %s, %s)"""
 
     cursor=conn.cursor()
-    cursor.execute(query,(city["ID"], city["Name"],city["CountryCode"],city["District"],city["Population"]))
+    cursor.execute(query,(city["Name"],city["CountryCode"],city["District"],city["Population"]))
     conn.commit()
+    newid = cursor.lastrowid
+    city["id"] = newid
     return city
+
 
 def delete_city(id):
     if (not conn):
@@ -68,12 +71,16 @@ def get_cities():
     if (not conn):
         connect()
 
-    query="""select * from city  
-            order by Name"""
+    query="""select * from city order by Name"""
     
     cursor=conn.cursor()
     cursor.execute(query)
     return cursor.fetchall()
+
+def get_total_cities_count():
+    
+    query=""" SELECT COUNT(*) FROM city"""
+    pass
 
 def get_countries():
     if (not conn):

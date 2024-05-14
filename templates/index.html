@@ -1,8 +1,35 @@
-<html>
-    <body>
-        Hello World!
-    </body>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello World!</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh; /* Full viewport height */
+            display: flex;
+            flex-direction: column; /* Align items vertically */
+            justify-content: top; /* Center vertically */
+            align-items: center; /* Center horizontally */
+            background-color: #87ceeb; /* Background color */
+        }
+
+        h1 {
+            font-size: 48px; /* Adjust the font size */
+            font-family: Arial, sans-serif; /* Font family */
+            color: #333; /* Text color */
+            text-transform: uppercase; /* Uppercase text */
+        }
+    </style>
+</head>
+<body>
+    <img src="C:\Users\knuto\ATU Data Analysis course\WSaA-project\cat-looking-at-a-globe-vector.jpg" alt="Image Description">
+    <h1>Hello World!</h1>
+</body>
 </html>
+
 
 <html>
     <head>
@@ -17,8 +44,7 @@
         <div>
             <table class="table" id="cityTable">
                 <tr>
-                        <th>ID</th>
-                        <th>Name</th>
+                        <th>Name<br> (click to see city on the map)</th>
                         <th>Country Code</th>
                         <th>District</th>
                         <th>Population</th>
@@ -30,7 +56,6 @@
         </div>
         <div id='createUpdateForm' style="display: none">
                 <h2><span id="createLabel">Create a</span> <span id="updateLabel">update</span> City</h2>
-                <input type="hidden" name="ID"/>
                 Name <input type="text" name="Name" /><br/>
                 Country Code <input type="text" name="CountryCode"/> <br/>
                 District <input type="text" name="District"/> <br/>
@@ -40,6 +65,9 @@
         </div>
     </body>
     <script>
+    var currentPage = 1;
+    var itemsPerPage = 10;
+
     function showCreate(){
         document.getElementById('showCreateButton').style.display="none"
         document.getElementById('cityTable').style.display="none"
@@ -56,7 +84,43 @@
         document.getElementById('showCreateButton').style.display="block"
         document.getElementById('cityTable').style.display="block"
         document.getElementById('createUpdateForm').style.display="none"
+        currentPage=1;
+        getAllAjax();
     }
+    function getAllAjax() {
+        $.ajax({
+            "url": "/cities?page=" + currentPage + "&per_page=" + itemsPerPage,
+            "method": "GET",
+            "dataType": "JSON",
+            "success": function (result) {
+                // Clear table before adding new data
+                $("#cityTable").empty();
+
+                // Add cities for the current page to the table
+                for (city of result) {
+                    addCityToTable(city);
+                }
+            },
+            "error": function (xhr, status, error) {
+                console.log("error: " + status + " msg:" + error);
+            }
+        });
+    }
+
+    // Function to navigate to the previous page
+    function goToPreviousPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            getAllAjax();
+        }
+    }
+
+    // Function to navigate to the next page
+    function goToNextPage() {
+        currentPage++;
+        getAllAjax();
+    }
+
     function showUpdate(buttonElement){
         document.getElementById('showCreateButton').style.display="none"
         document.getElementById('cityTable').style.display="none"
@@ -108,20 +172,18 @@
     function addCityToTable(city){
         var tableElement = document.getElementById('cityTable')
         var rowElement = tableElement.insertRow(-1)
-        rowElement.setAttribute('ID',city.ID)
-        var cell1 = rowElement.insertCell(0);
-        cell1.innerHTML = city.ID
-        var cell2 = rowElement.insertCell(1);
-        cell2.innerHTML = '<a href="https://www.google.com/maps/search/?api=1&query=' + city.Name + '">'+city.Name+'</a>'
-        var cell3 = rowElement.insertCell(2);
+        
+        var cell2 = rowElement.insertCell(0);
+        cell2.innerHTML = '<a href="https://www.google.com/maps/search/?api=1&query=' + city.Name + '" target="_blank">' + city.Name + '</a>';
+        var cell3 = rowElement.insertCell(1);
         cell3.innerHTML = city.CountryCode
-        var cell4 = rowElement.insertCell(3);
+        var cell4 = rowElement.insertCell(2);
         cell4.innerHTML = city.District
-        var cell5 = rowElement.insertCell(4);
+        var cell5 = rowElement.insertCell(3);
         cell5.innerHTML = city.Population
-        var cell8 = rowElement.insertCell(5);
+        var cell8 = rowElement.insertCell(4);
         cell8.innerHTML = '<button onclick="showUpdate(this)">Update</button>'
-        var cell9 = rowElement.insertCell(6);
+        var cell9 = rowElement.insertCell(5);
         cell9.innerHTML = '<button onclick=doDelete(this)>Delete</button>'
 
     }

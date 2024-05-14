@@ -11,18 +11,35 @@ def index():
 #
 # View Cities by ID
 #
-@app.route('/city/<int:city_id>', methods=['GET'])
-def get_city_by_id(city_id):
-    cities = citiesDAO.get_city(city_id)
-    for city in cities:
-        return jsonify(city)
+#@app.route('/city/<int:city_id>', methods=['GET'])
+#def get_city_by_id(city_id):
+    #cities = citiesDAO.get_city(city_id)
+    #for city in cities:
+        #return jsonify(city)
 #
 #View all Cities
 #
 @app.route('/cities', methods=['GET'])
 def get_cities():
+    #cities = citiesDAO.get_cities()
+    #return jsonify(cities)
+# Pagination parameters
+    #page = int(request.args.get('page', 1))
+    #per_page = int(request.args.get('per_page', 10))  # Default 10 items per page
+
+    # Calculate offset
+    #offset = (page - 1) * per_page
+
+    # Fetch cities for the current page
     cities = citiesDAO.get_cities()
     return jsonify(cities)
+    # Get total number of cities for pagination
+    #total_cities = citiesDAO.get_total_cities_count()
+
+    # Calculate total number of pages
+    #total_pages = (total_cities + per_page - 1) // per_page
+
+    #return render_template('cities.html', cities=cities, page=page, per_page=per_page, total_pages=total_pages)
 
 #
 #View all Countries
@@ -49,9 +66,9 @@ def get_cities_by_country(country_name):
 def add_city():
      jsonstring = request.json
      city={}
-     if "ID" not in jsonstring:
-                abort(403)
-     city["ID"] = jsonstring["ID"]
+     #if "ID" not in jsonstring:
+      #          abort(403)
+     #city["ID"] = jsonstring["ID"]
      if "Name" not in jsonstring:
                 abort(403)
      city["Name"]= jsonstring["Name"]
