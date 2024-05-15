@@ -1,4 +1,5 @@
 
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -18,27 +19,23 @@
 
         h1 {
             font-size: 48px; /* Adjust the font size */
-            font-family: Arial, sans-serif; /* Font family */
-            color: #333; /* Text color */
-            text-transform: uppercase; /* Uppercase text */
+        }
+        img {
+            width: 200px; /* Adjust the width of the image */
+            height: auto; /* Maintain aspect ratio */
+            margin-right: 20px; /* Add space between the image and text */
         }
     </style>
 </head>
 <body>
-    <img src="C:\Users\knuto\ATU Data Analysis course\WSaA-project\cat-looking-at-a-globe-vector.jpg" alt="Image Description">
+    <img src="/WSaA-project/cat_looking_at_a_globe.jpg">
     <h1>Hello World!</h1>
-</body>
-</html>
+    <title> view Cities</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js">
 
-
-<html>
-    <head>
-        <title> view Cities</title>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    </script>
        
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    </head>
-    <body>
         <h1>Cities</h1>
         <div> <button id="showCreateButton" onclick="showCreate()">Create</button></div>
         <div>
@@ -64,7 +61,7 @@
                 <span><button id="doUpdateButton" onclick="doUpdate()">Update</button></span>
         </div>
     </body>
-    <script>
+    <script>    
     var currentPage = 1;
     var itemsPerPage = 10;
 
@@ -268,7 +265,7 @@
             "success":function(result){
                 //console.log(result);
                 city.ID = result.ID
-                addCityToTab
+                addCityToTable(city)
                 showViewAll()
             },
             "error":function(xhr,status,error){
@@ -317,4 +314,5 @@
 
     
     </script>
+</body>
 </html>

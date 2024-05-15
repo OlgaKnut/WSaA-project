@@ -1,6 +1,6 @@
 import citiesDAO
 
-from flask import Flask, request, jsonify, abort, render_template
+from flask import Flask, request, jsonify, abort, render_template, url_for
 
 app = Flask(__name__)
 
@@ -66,9 +66,9 @@ def get_cities_by_country(country_name):
 def add_city():
      jsonstring = request.json
      city={}
-     #if "ID" not in jsonstring:
-      #          abort(403)
-     #city["ID"] = jsonstring["ID"]
+     if "ID" not in jsonstring:
+                abort(403)
+     city["ID"] = jsonstring["ID"]
      if "Name" not in jsonstring:
                 abort(403)
      city["Name"]= jsonstring["Name"]
@@ -118,9 +118,12 @@ def update_city(id):
     city["Population"]= jsonstring["Population"]
     city = citiesDAO.update_city(id, city)
     return jsonify(city)
-  
 
-
+@app.route('/cat')
+def cat():
+    # Assuming your JPEG file is named "example.jpg" and located in the "static" directory
+    jpeg_path = url_for('WSaA-project', filename='cat_looking_at_a_globe.jpg')
+    return f'The path to the JPEG file is: {jpeg_path}'
 
 if __name__ == "__main__":
     app.run(debug = True)

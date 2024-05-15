@@ -96,15 +96,15 @@ def get_countries():
 def get_next_batch(cursor, max_records):
     return cursor.fetchmany(max_records)
 
-def get_city(id):
+def get_city(name):
     if (not conn):
         connect()
 
-    query = """select  ID, Name, CountryCode, Population
-            from city where ID = %s"""
+    query = """select  Name, CountryCode, Population
+            from city where Name like %s"""
 
     cursor=conn.cursor()
-    x=cursor.execute(query,(id))
+    x=cursor.execute(query,(name))
     x=cursor.fetchall()
     return x
 
