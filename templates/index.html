@@ -18,301 +18,42 @@
         }
 
         h1 {
-            font-size: 48px; /* Adjust the font size */
+            font-size: 28px; /* Adjust the font size */
         }
         img {
-            width: 200px; /* Adjust the width of the image */
-            height: auto; /* Maintain aspect ratio */
-            margin-right: 20px; /* Add space between the image and text */
+            margin-right: 10px; /* Add space between the image and text */
         }
     </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="/static/rest_server.js"></script>
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> -->
 </head>
 <body>
-    <img src="/WSaA-project/cat_looking_at_a_globe.jpg">
+    <img src="/static/cat_looking_at_a_globe.jpg" width="300">
     <h1>Hello World!</h1>
-    <title> view Cities</title>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js">
-
-    </script>
-       
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <h1>Cities</h1>
         <div> <button id="showCreateButton" onclick="showCreate()">Create</button></div>
         <div>
-            <table class="table" id="cityTable">
-                <tr>
-                        <th>Name<br> (click to see city on the map)</th>
-                        <th>Country Code</th>
-                        <th>District</th>
-                        <th>Population</th>
-                        <th>Update</th>
-                        <th>Delete</th>
-                </tr>
-                
+            <table class="table" id="cityTable">  
             </table>
         </div>
         <div id='createUpdateForm' style="display: none">
-                <h2><span id="createLabel">Create a</span> <span id="updateLabel">update</span> City</h2>
-                Name <input type="text" name="Name" /><br/>
-                Country Code <input type="text" name="CountryCode"/> <br/>
-                District <input type="text" name="District"/> <br/>
-                Population <input type="number" name="Population"/> <br/>
-                <span><button id="doCreateButton" onclick="doCreate()">Create</button></span>
-                <span><button id="doUpdateButton" onclick="doUpdate()">Update</button></span>
+            <h2><span id="createLabel">Create a</span> <span id="updateLabel">Update</span> City</h2>
+                <input type="text" name="ID" hidden/>
+                <table>
+                    <tr><td>Name</td><td><input type="text" name="Name" /></td></tr>
+                    <tr><td>Country</td><td><select name="CountryCode" id="countriesList"></select></td></tr>
+                    <tr><td>District</td><td><input type="text" name="District"/></td></tr>
+                    <tr><td>Population</td><td><input type="number" name="Population"/></td></tr>
+                </table>
+
+                <span>
+                    <table><tr>
+                        <td><button id="doCreateButton" onclick="doCreate()">Create</button></td>
+                        <td><button id="doUpdateButton" onclick="doUpdate()">Update</button></td>
+                        <td><button id="doCancelButton" onclick="doCancel()">Cancel</button></td>
+                    </tr></table>
+                </span>
         </div>
-    </body>
-    <script>    
-    var currentPage = 1;
-    var itemsPerPage = 10;
-
-    function showCreate(){
-        document.getElementById('showCreateButton').style.display="none"
-        document.getElementById('cityTable').style.display="none"
-        document.getElementById('createUpdateForm').style.display="block"
-
-        document.getElementById('createLabel').style.display="inline"
-        document.getElementById('updateLabel').style.display="none"
-
-        document.getElementById('doCreateButton').style.display="block"
-        document.getElementById('doUpdateButton').style.display="none"
-
-    }
-    function showViewAll(){
-        document.getElementById('showCreateButton').style.display="block"
-        document.getElementById('cityTable').style.display="block"
-        document.getElementById('createUpdateForm').style.display="none"
-        currentPage=1;
-        getAllAjax();
-    }
-    function getAllAjax() {
-        $.ajax({
-            "url": "/cities?page=" + currentPage + "&per_page=" + itemsPerPage,
-            "method": "GET",
-            "dataType": "JSON",
-            "success": function (result) {
-                // Clear table before adding new data
-                $("#cityTable").empty();
-
-                // Add cities for the current page to the table
-                for (city of result) {
-                    addCityToTable(city);
-                }
-            },
-            "error": function (xhr, status, error) {
-                console.log("error: " + status + " msg:" + error);
-            }
-        });
-    }
-
-    // Function to navigate to the previous page
-    function goToPreviousPage() {
-        if (currentPage > 1) {
-            currentPage--;
-            getAllAjax();
-        }
-    }
-
-    // Function to navigate to the next page
-    function goToNextPage() {
-        currentPage++;
-        getAllAjax();
-    }
-
-    function showUpdate(buttonElement){
-        document.getElementById('showCreateButton').style.display="none"
-        document.getElementById('cityTable').style.display="none"
-        document.getElementById('createUpdateForm').style.display="block"
-
-        document.getElementById('createLabel').style.display="none"
-        document.getElementById('updateLabel').style.display="inline"
-
-        document.getElementById('doCreateButton').style.display="none"
-        document.getElementById('doUpdateButton').style.display="block"
-
-
-        var rowElement = buttonElement.parentNode.parentNode
-        // these is a way of finding the closest <tr> which would safer, closest()
-        
-        var city = getCityFromRow(rowElement)
-        populateFormWithCity(city)
-    }
-    function doCreate(){
-        var form = document.getElementById('createUpdateForm')
-
-        var city = {}
-        
-        city.Name = form.querySelector('input[name="Name"]').value
-        city.CountryCode = form.querySelector('input[name="CountryCode"]').value
-        city.District = form.querySelector('input[name="District"]').value
-        city.Population = form.querySelector('input[name="Population"]').value
-        console.log(JSON.stringify(city))
-        createCityAjax(city)
-        
-        
-    }
-    function doUpdate(){
-        var city = getCityFromForm();
-        var rowElement = document.getElementById(city.ID);
-        updateCityAjax(city);
-        setCityInRow(rowElement,city);
-       
-        clearForm();
-        showViewAll();
-    }
-    function doDelete(r){
-        var tableElement = document.getElementById('cityTable');
-        var rowElement = r.parentNode.parentNode;
-        var index = rowElement.rowIndex;
-        deleteCityAjax(rowElement.getAttribute("ID"));
-        tableElement.deleteRow(index);
-    }
-    function addCityToTable(city){
-        var tableElement = document.getElementById('cityTable')
-        var rowElement = tableElement.insertRow(-1)
-        
-        var cell2 = rowElement.insertCell(0);
-        cell2.innerHTML = '<a href="https://www.google.com/maps/search/?api=1&query=' + city.Name + '" target="_blank">' + city.Name + '</a>';
-        var cell3 = rowElement.insertCell(1);
-        cell3.innerHTML = city.CountryCode
-        var cell4 = rowElement.insertCell(2);
-        cell4.innerHTML = city.District
-        var cell5 = rowElement.insertCell(3);
-        cell5.innerHTML = city.Population
-        var cell8 = rowElement.insertCell(4);
-        cell8.innerHTML = '<button onclick="showUpdate(this)">Update</button>'
-        var cell9 = rowElement.insertCell(5);
-        cell9.innerHTML = '<button onclick=doDelete(this)>Delete</button>'
-
-    }
-    
-    function clearForm(){
-        var form = document.getElementById('createUpdateForm')
-
-        form.querySelector('input[name="Name"]').value=''
-        form.querySelector('input[name="CountryCode"]').value=''
-        form.querySelector('input[name="District"]').value=''
-        form.querySelector('input[name="Population"]').value=''
-    }
-    function getCityFromRow(rowElement){
-        var car ={}
-        city.ID  = rowElement.getAttribute('ID')
-        city.Name = rowElement.cells[1].firstChild.textContent
-        city.CountryCode = rowElement.cells[2].firstChild.textContent
-        city.District = rowElement.cells[3].firstChild.textContent
-        city.Population = parseInt(rowElement.cells[4].firstChild.textContent,10)
-        return city
-    }
-    
-    function setCityInRow(rowElement, city){
-        rowElement.cells[0].firstChild.textContent= city.ID  
-        rowElement.cells[1].firstChild.textContent= city.Name 
-        rowElement.cells[2].firstChild.textContent= city.CountryCode
-        rowElement.cells[3].firstChild.textContent= city.District
-        rowElement.cells[4].firstChild.textContent= city.Population 
-    }
-    function populateFormWithCity(city){
-        var form = document.getElementById('createUpdateForm')
-        form.querySelector('input[name="ID"]').disabled = true
-
-        form.querySelector('input[name="ID"]').value  = city.ID
-        form.querySelector('input[name="Name"]').value= city.Name
-        form.querySelector('input[name="CountryCode"]').value= city.CountryCode
-        form.querySelector('input[name="District"]').value= city.District
-        form.querySelector('input[name="Population"]').value= city.Population
-        return city
-    }
-    
-    function getCityFromForm(){
-        var form = document.getElementById('createUpdateForm')
-        var city = {}
-        city.ID = form.querySelector('input[name="ID"]').value
-        city.Name = form.querySelector('input[name="Name"]').value
-        city.CountryCode = form.querySelector('input[name="CountryCode"]').value
-        city.District = form.querySelector('input[name="District"]').value
-        city.Population = parseInt(form.querySelector('input[name="Population"]').value,10)
-        console.log(JSON.stringify(city))
-        return city
-    }
-    
-    function getAllAjax(){
-        $.ajax({
-            "url": "/cities",
-            "method":"GET",
-            "data":"",
-            "dataType": "JSON",
-            "success":function(result){
-                //console.log(result);
-                for (city of result){
-                    addCityToTable(city);
-                }
-                
-            },
-            "error":function(xhr,status,error){
-                console.log("error: "+status+" msg:"+error);
-            }
-        });
-
-    }
-    function createCityAjax(city){
-        //var book = {"title":"yoto", "author":"momo","price":800}
-        console.log(JSON.stringify(city));
-        $.ajax({
-            "url": "/cities",
-            "method":"POST",
-            "data":JSON.stringify(city),
-            "dataType": "JSON",
-            contentType: "application/json; charset=utf-8",
-            "success":function(result){
-                //console.log(result);
-                city.ID = result.ID
-                addCityToTable(city)
-                showViewAll()
-            },
-            "error":function(xhr,status,error){
-                console.log("error: "+status+" msg:"+error);
-            }
-        });
-    }
-    function updateCityAjax(city){
-        //var book = {"title":"yoto", "author":"momo","price":800}
-        console.log(JSON.stringify(city));
-        $.ajax({
-            "url": "/cities/"+encodeURI(city.ID),
-            "method":"PUT",
-            "data":JSON.stringify(city),
-            "dataType": "JSON",
-            contentType: "application/json; charset=utf-8",
-            "success":function(result){
-               // console.log(result);
-                  
-            },
-            "error":function(xhr,status,error){
-                console.log("error: "+status+" msg:"+error);
-            }
-        });
-    }
-    function deleteCityAjax(id){
-        
-        //console.log(JSON.stringify('deleting '+id));
-        $.ajax({
-            "url": "/cities/"+encodeURI(id),
-            "method":"DELETE",
-            "data":"",
-            "dataType": "JSON",
-            contentType: "application/json; charset=utf-8",
-            "success":function(result){
-                //console.log(result);
-                  
-            },
-            "error":function(xhr,status,error){
-                console.log("error: "+status+" msg:"+error);
-            }
-        });
-    }
-    getAllAjax();
-  
-
-    
-    </script>
 </body>
 </html>
