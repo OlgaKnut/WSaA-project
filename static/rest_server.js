@@ -53,7 +53,6 @@ function doUpdate(){
     var city = getCityFromForm();
     var rowElement = document.getElementById(city.ID);
     updateCityAjax(city);
-    setCityInRow(rowElement,city);
 
     clearForm();
 }
