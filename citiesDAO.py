@@ -45,15 +45,15 @@ def update_city(id, city):
         conn.commit()
         return city
 
-def get_cities():
+def get_cities(firstCityIndex, maxNumber):
     if (not conn):
         connect()
     query="""select city.ID, city.Name, city.District, city.Population, city.CountryCode, country.Name as CountryName
      from city 
      inner join country on country.Code=city.CountryCode
-     order by city.Name"""
+     order by city.Name limit %s, %s"""
     cursor=conn.cursor()
-    cursor.execute(query)
+    cursor.execute(query,(firstCityIndex,firstCityIndex + maxNumber))
     return cursor.fetchall()
 
 def get_countries():

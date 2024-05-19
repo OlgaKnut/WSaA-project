@@ -1,46 +1,54 @@
-function showCreate(){
-    document.getElementById('showCreateButton').style.display="none"
-    document.getElementById('cityTable').style.display="none"
-    document.getElementById('createUpdateForm').style.display="block"
+firstCityIndex = 0;
+maxCitiesPerPage = 25;
 
+function showMainTable(showHide) {
+    if (showHide) {
+        document.getElementById('showCreateButton').style.display="block"
+        document.getElementById('cityTable').style.display="block"
+        if (showPrevPage)
+            document.getElementById("btnPrevPage").style.display = 'inline'
+        if (showNextPage)
+            document.getElementById("btnNextPage").style.display = 'inline'
+    } else {
+        document.getElementById('showCreateButton').style.display="none"
+        document.getElementById('cityTable').style.display="none"
+        document.getElementById("btnPrevPage").style.display = 'none'
+        document.getElementById("btnNextPage").style.display = 'none'
+    }
+}
+
+
+
+function showCreate(){
+    document.getElementById('createUpdateForm').style.display="block"
     document.getElementById('createLabel').style.display="inline"
     document.getElementById('updateLabel').style.display="none"
-
     document.getElementById('doCreateButton').style.display="block"
     document.getElementById('doUpdateButton').style.display="none"
+    showMainTable(false)
 }
 
 function showViewAll(){
-    document.getElementById('showCreateButton').style.display="block"
-    document.getElementById('cityTable').style.display="block"
     document.getElementById('createUpdateForm').style.display="none"
+    showMainTable(true)
     getAllAjax();
 }
 
 function showUpdate(buttonElement){
-    document.getElementById('showCreateButton').style.display="none"
-    document.getElementById('cityTable').style.display="none"
     document.getElementById('createUpdateForm').style.display="block"
-
     document.getElementById('createLabel').style.display="none"
     document.getElementById('updateLabel').style.display="inline"
-
     document.getElementById('doCreateButton').style.display="none"
     document.getElementById('doUpdateButton').style.display="block"
-
-
+    showMainTable(false)
     var rowElement = buttonElement.parentNode.parentNode
-    // these is a way of finding the closest <tr> which would safer, closest()
-
     var city = getCityFromRow(rowElement)
     populateFormWithCity(city)
 }
 
 function doCreate(){
     var form = document.getElementById('createUpdateForm')
-
     var city = {}
-
     city.Name = form.querySelector('input[name="Name"]').value
     city.CountryCode = document.getElementById('countriesList').value
     city.District = form.querySelector('input[name="District"]').value
@@ -53,7 +61,6 @@ function doUpdate(){
     var city = getCityFromForm();
     var rowElement = document.getElementById(city.ID);
     updateCityAjax(city);
-
     clearForm();
 }
 
@@ -65,27 +72,22 @@ function doDelete(r){
     tableElement.deleteRow(index);
 }
 
-function deleteCityAjax(id){
-    $.ajax({
-        "url": "/cities/"+encodeURI(id),
-        "method":"DELETE",
-        "data":"",
-        "dataType": "JSON",
-        contentType: "application/json; charset=utf-8",
-        "success":function(result){
-
-        },
-        "error":function(xhr,status,error){
-            console.log("error: "+status+" msg:"+error);
-        }
-    });
-}
-
 function doCancel() {
-    document.getElementById('showCreateButton').style.display="block"
-    document.getElementById('cityTable').style.display="block"
     document.getElementById('createUpdateForm').style.display="none"
+    showMainTable(true)
 }
+function goPrevPage() {
+    if (firstCityIndex >= maxCitiesPerPage) {
+        firstCityIndex -= maxCitiesPerPage;
+        getAllAjax();
+    }
+}
+
+function goNextPage() {
+    firstCityIndex += maxCitiesPerPage;
+    getAllAjax();
+}
+
 function addCountryToList(country){
     var countriesList = document.getElementById('countriesList')
     var option = document.createElement("option");
@@ -127,7 +129,7 @@ function addCityToTable(city){
 
 function getAllAjax(){
     $.ajax({
-        "url": "/cities",
+        "url": "/cities/"+encodeURI(firstCityIndex) + "/" + encodeURI(maxCitiesPerPage + 1),
         "method":"GET",
         "data":"",
         "dataType": "JSON",
@@ -138,8 +140,30 @@ function getAllAjax(){
                     '<th align="left">District</th>' +
                     '<th align="left">Population</th>' +
                     '<th align="left"> </th><th> </th><tn> </tn></tr>';
+            i = 0;
+            showNextPage = false;
             for (city of result){
-                addCityToTable(city);
+                if (i < maxCitiesPerPage)
+                    addCityToTable(city);
+                else
+                    showNextPage=true;
+                i = i + 1;
+            }
+
+            btnNextPage = document.getElementById("btnNextPage");
+            if (showNextPage)
+                btnNextPage.style.display='inline';
+            else
+                btnNextPage.style.display='none';
+
+            btnPrevPage = document.getElementById("btnPrevPage");
+            if (firstCityIndex == 0) {
+                btnPrevPage.style.display='none';
+                showPrevPage = false;
+            }
+            else {
+                btnPrevPage.style.display='inline';
+                showPrevPage = true;
             }
 
         },
@@ -170,7 +194,6 @@ function setCityInRow(rowElement, city){
 function populateFormWithCity(city){
     var form = document.getElementById('createUpdateForm')
     form.querySelector('input[name="ID"]').disabled = true
-
     form.querySelector('input[name="ID"]').value  = city.ID
     form.querySelector('input[name="Name"]').value= city.Name
     countriesList = document.getElementById('countriesList')
@@ -208,6 +231,7 @@ function createCityAjax(city){
         }
     });
 }
+
 function updateCityAjax(city){
     $.ajax({
         "url": "/cities/"+encodeURI(city.ID),
@@ -223,6 +247,7 @@ function updateCityAjax(city){
         }
     });
 }
+
 function deleteCityAjax(id){
     $.ajax({
         "url": "/cities/"+encodeURI(id),

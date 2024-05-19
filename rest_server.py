@@ -20,15 +20,14 @@ def get_countries():
 #
 #View all Cities
 #
-@app.route('/cities', methods=['GET'])
-def get_cities():
-    cities = citiesDAO.get_cities()
+@app.route('/cities/<int:firstCityIndex>/<int:maxNumber>', methods=['GET'])
+def get_cities(firstCityIndex, maxNumber):
+    cities = citiesDAO.get_cities(firstCityIndex, maxNumber)
     return jsonify(cities)
 
 #
 #add City
 #
-#curl -X POST --header "Content-Type: application/json" -d "{\"ID\":\"100001\",\"Name\":\"test\", \"CountryCode\":\"USA\",\"District\":\"test\",\"Population\":\"123\", \"latitude\":\"0\",\"longitude\":\"0\"}" http://127.0.0.1:5000/cities
 
 @app.route('/cities', methods=['POST'])
 def add_city():
@@ -50,12 +49,9 @@ def add_city():
      city = citiesDAO.add_city(city)
      return jsonify(city)
 
-
-
 #
 #delete City
 #
-# curl -X DELETE  http://127.0.0.1:5000/cities/100001
 @app.route('/cities/<int:id>', methods=['DELETE'])
 def delete_city(id):
     citiesDAO.delete_city(id)
@@ -65,7 +61,6 @@ def delete_city(id):
 #
 #update City
 #
-#curl -X PUT --header "Content-Type: application/json" -d "{\"Name\":\"test\", \"CountryCode\":\"USA\",\"District\":\"test\",\"Population\":\"123\", \"latitude\":\"0\",\"longitude\":\"0\"}" http://127.0.0.1:5000/cities/100001
 @app.route('/cities/<int:id>', methods=['PUT'])
 def update_city(id):
     jsonstring = request.json
