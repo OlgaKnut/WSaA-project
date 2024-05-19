@@ -10,19 +10,19 @@
         body {
             margin: 0;
             padding: 0;
-            height: 100vh; /* Full viewport height */
+            height: 100vh; 
             display: flex;
-            flex-direction: column; /* Align items vertically */
-            justify-content: top; /* Center vertically */
-            align-items: center; /* Center horizontally */
-            background-color: #87ceeb; /* Background color */
+            flex-direction: column; 
+            justify-content: top; 
+            align-items: center; 
+            background-color: #87ceeb; 
         }
 
         h1 {
-            font-size: 28px; /* Adjust the font size */
+            font-size: 28px;
         }
         img {
-            margin-right: 10px; /* Add space between the image and text */
+            margin-right: 10px; 
         }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -32,14 +32,15 @@
     <img src="/static/cat_looking_at_a_globe.jpg" width="300">
     <h1>Hello World!</h1>
         <h1>Cities</h1>
-        <div> <button id="showCreateButton" onclick="showCreate()">Create</button></div>
+        <div> <button id="showCreateButton" onclick="showCreate()">Create City</button></div>
         <div>
+            <table><tr>
+                <td><button id="btnPrevPage" onclick="goPrevPage()">Prev Page</button></td>
+                <td><button id="btnNextPage" onclick="goNextPage()">Next Page</button></td>
+            </tr></table>
             <table class="table" id="cityTable">  
             </table>
-            <table><tr>
-                <td><button id="btnPrevPage" onclick="goPrevPage()">Prev</button></td>
-                <td><button id="btnNextPage" onclick="goNextPage()">Next</button></td>
-            </tr></table>
+            
         </div>
         <div id='createUpdateForm' style="display: none">
             <h2><span id="createLabel">Create a</span> <span id="updateLabel">Update</span> City</h2>
