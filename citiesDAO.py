@@ -1,4 +1,3 @@
-
 import pymysql
 
 conn = None
@@ -14,6 +13,12 @@ def connect():
         cursorclass=pymysql.cursors.DictCursor
         )
      
+def disconnect():
+    global conn
+    if conn:
+        conn.close()
+        conn = None
+
 def add_city(city):
     if (not conn):
         connect()
@@ -24,6 +29,7 @@ def add_city(city):
     conn.commit()
     newid = cursor.lastrowid
     city["id"] = newid
+    disconnect()
     return city
 
 def delete_city(id):
@@ -33,6 +39,7 @@ def delete_city(id):
     cursor=conn.cursor()
     cursor.execute(query,(id))
     conn.commit()
+    disconnect()
     return ""
 
 def update_city(id, city):
@@ -43,6 +50,7 @@ def update_city(id, city):
         cursor=conn.cursor()
         cursor.execute(query,(city["Name"],city["CountryCode"],city["District"],city["Population"], id))
         conn.commit()
+        disconnect()
         return city
 
 def get_cities(firstCityIndex, maxNumber):
@@ -54,6 +62,7 @@ def get_cities(firstCityIndex, maxNumber):
      order by city.Name limit %s, %s"""
     cursor=conn.cursor()
     cursor.execute(query,(firstCityIndex,firstCityIndex + maxNumber))
+    disconnect()
     return cursor.fetchall()
 
 def get_countries():
@@ -63,4 +72,5 @@ def get_countries():
      from country order by country.Name"""
     cursor=conn.cursor()
     cursor.execute(query)
+    disconnect()
     return cursor.fetchall()
